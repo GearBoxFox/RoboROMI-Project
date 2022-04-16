@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
 
   private final RomiDrivetrain m_drivetrain = new RomiDrivetrain();
 
-  public final Joystick m_joystick = new Joystick(0);
+  public final XboxController m_joystick = new XboxController(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -46,13 +46,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Left Joystick X", m_joystick.getX());
-    SmartDashboard.putNumber("Left Joystick Y", m_joystick.getY());
+    SmartDashboard.putNumber("Left Joystick X", m_joystick.getLeftX());
+    SmartDashboard.putNumber("Left Joystick Y", m_joystick.getLeftY());
 
     //SmartDashboard.putNumber("Right Joystick X", m_joystick.getRightX());
     //SmartDashboard.putNumber("Right Joystick Y", m_joystick.getRightY());
 
     SmartDashboard.putBoolean("Button 0", m_joystick.getRawButton(0));
+
+    SmartDashboard.putBoolean("Out", SmartDashboard.getBoolean("In", false));
   }
 
   /**
@@ -94,7 +96,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_drivetrain.arcadeDrive(-m_joystick.getLeftY(), m_joystick.getRightX());
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
