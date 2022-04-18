@@ -9,8 +9,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutonomousDistance;
 import frc.robot.commands.AutonomousTime;
+import frc.robot.commands.TurnDegreesPID;
+import frc.robot.commands.TurnDegreesTheSecond;
 import frc.robot.commands.TurnOffYellow;
 import frc.robot.commands.TurnOnYellow;
+import frc.robot.sensors.RomiGyro;
 import frc.robot.commands.AutonomousDance;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OnBoardIO;
@@ -32,6 +35,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OnBoardIO m_onboardIO = new OnBoardIO(ChannelMode.INPUT, ChannelMode.INPUT);
+  private final RomiGyro m_gryo = new RomiGyro();
 
   // Assumes a gamepad plugged into channnel 0
   private final XboxController m_controller = new XboxController(0);
@@ -79,13 +83,15 @@ public class RobotContainer {
     XboxBumperLeft.or(XboxBumperRight).whenActive(new TurnOnYellow(m_onboardIO));
     XboxBumperLeft.or(XboxBumperRight).whenInactive(new TurnOffYellow(m_onboardIO));
 
+    JoystickButton XboxButtonA = new JoystickButton(m_controller, XboxController.Button.kA.value);
+   // XboxButtonA.whenActive(printGyroAngle());
+
     // Setup SmartDashboard options
     m_chooser.setDefaultOption("Auto Routine Distance", new AutonomousDistance(m_drivetrain));
     m_chooser.addOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
     m_chooser.addOption("Auto Dance", new AutonomousDance(m_drivetrain));
+    m_chooser.addOption("PID Turn", new TurnDegreesPID(0.5, 90, m_drivetrain));
     SmartDashboard.putData(m_chooser);
-
-    // Variables for Isaish mode selector
   }
 
   /**
@@ -107,4 +113,10 @@ public class RobotContainer {
         m_drivetrain, () -> -m_controller.getLeftY(), () -> m_controller.getRightX());
         
   }
+/*
+  public Command printGyroAngle(){
+    double angle = m_gryo.printRawAngle();
+    return new PrintCommand(Double.toString(angle));
+  }
+  */
 }

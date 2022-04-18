@@ -5,12 +5,20 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.sensors.RomiGyro;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import frc.robot.commands.TurnDegrees;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-public class TurnDegrees extends CommandBase {
+public class TurnDegreesPID extends CommandBase {
   private final Drivetrain m_drive;
   private final double m_degrees;
   private final double m_speed;
+  PIDController pidcontrol = new PIDController(0.2, 0, 0);
+  RomiGyro m_gyro = new RomiGyro();
 
   /**
    * Creates a new TurnDegrees. This command will turn your robot for a desired rotation (in
@@ -20,11 +28,10 @@ public class TurnDegrees extends CommandBase {
    * @param degrees Degrees to turn. Leverages encoders to compare distance.
    * @param drive The drive subsystem on which this command will run
    */
-  public TurnDegrees(double speed, double degrees, Drivetrain drive) {
+  public TurnDegreesPID(double speed, double degrees, Drivetrain drive) {
     m_degrees = degrees;
-    m_speed = speed;
     m_drive = drive;
-    addRequirements(drive);
+    m_speed = speed;
   }
 
   // Called when the command is initially scheduled.
@@ -33,21 +40,42 @@ public class TurnDegrees extends CommandBase {
     // Set motors to stop, read encoder values for starting point
     m_drive.arcadeDrive(0, 0);
     m_drive.resetEncoders();
-    //System.out.println("Inside TurnDegrees");
+    m_gyro.reset();
+    System.out.println("Init");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.arcadeDrive(0, m_speed);
-    //System.out.println("Execute");
+   SmartDashboard.putNumber("Controller Output", pidcontrol.calculate(m_gyro.getAngleZ(), m_degrees));
+   /*
+    if(pidcontrol.calculate(m_gyro.getAngleZ(), m_degrees) > m_degrees){
+      m_drive.arcadeDrive(0, -m_speed);
+    }
+    if(pidcontrol.calculate(m_gyro.getAngleZ(), m_degrees) < m_degrees){
+      m_drive.arcadeDrive(0, m_speed);
+    }
+  */
+    //double outputAngle = pidcontrol.calculate(m_gyro.getAngleZ(), m_degrees);
+    double outputAngle = getCalcAngle(m_gyro.getAngleZ(), m_degrees);
+    SmartDashboard.putNumber("Setpoint", outputAngle);
+    System.out.println(outputAngle);
+    System.out.println(m_gyro.getAngleX());
+    //System.out.println("Before IF statement");
+    if(outputAngle < 0){
+      //System.out.println("Setpoint is less than zero");
+      CommandScheduler.getInstance().schedule(new TurnDegrees(-m_speed, Math.abs(outputAngle), m_drive));
+      }
+    if(outputAngle >= 0){
+      //System.out.println("Setpoint is greater than zero");
+      CommandScheduler.getInstance().schedule(new TurnDegrees(m_speed, Math.abs(outputAngle), m_drive));
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_drive.arcadeDrive(0, 0);
-    System.out.println("Turn End");
   }
 
   // Returns true when the command should end.
@@ -58,14 +86,24 @@ public class TurnDegrees extends CommandBase {
        has a wheel placement diameter (149 mm) - width of the wheel (8 mm) = 141 mm
        or 5.551 inches. We then take into consideration the width of the tires.
     */
-    double inchPerDegree = Math.PI * 5.551 / 360;
     // Compare distance travelled from start to distance based on degree turn
-    return getAverageTurningDistance() >= (inchPerDegree * m_degrees);
+    //return getAverageTurningDistance() >= (inchPerDegree * m_degrees);
+    return Math.abs(m_gyro.getAngleZ()) >= Math.abs(m_degrees);
   }
 
   private double getAverageTurningDistance() {
     double leftDistance = Math.abs(m_drive.getLeftDistanceInch());
     double rightDistance = Math.abs(m_drive.getRightDistanceInch());
     return (leftDistance + rightDistance) / 2.0;
+  }
+
+  private double getCalcAngle(double angle, double setpoint){
+    double m_angle = angle;
+    double m_setpoint = setpoint;
+    double kp = 0.2;
+
+    double error = m_angle - m_setpoint;
+
+    return error * kp;
   }
 }

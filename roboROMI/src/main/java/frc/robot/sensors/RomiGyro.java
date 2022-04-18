@@ -32,6 +32,7 @@ public class RomiGyro {
       m_simAngleX = gyroSimDevice.createDouble("angle_x", Direction.kInput, 0.0);
       m_simAngleY = gyroSimDevice.createDouble("angle_y", Direction.kInput, 0.0);
       m_simAngleZ = gyroSimDevice.createDouble("angle_z", Direction.kInput, 0.0);
+      System.out.println("break");
     }
   }
 
@@ -109,10 +110,14 @@ public class RomiGyro {
     if (m_simAngleZ != null) {
       return m_simAngleZ.get() - m_angleZOffset;
     }
-
+    System.out.println("Null");
     return 0.0;
   }
-
+/*
+  public double printRawAngle(){
+    return m_simAngleZ.get() - m_angleZOffset;
+  }
+*/
   /** Reset the gyro angles to 0. */
   public void reset() {
     if (m_simAngleX != null) {

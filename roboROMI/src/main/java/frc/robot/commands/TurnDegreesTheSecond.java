@@ -4,13 +4,16 @@
 
 package frc.robot.commands;
 
+import frc.robot.sensors.RomiGyro;
 import frc.robot.subsystems.Drivetrain;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class TurnDegrees extends CommandBase {
+public class TurnDegreesTheSecond extends CommandBase {
   private final Drivetrain m_drive;
   private final double m_degrees;
-  private final double m_speed;
+  PIDController pidcontrol = new PIDController(1, 0, 0);
+  RomiGyro m_gyro = new RomiGyro();
 
   /**
    * Creates a new TurnDegrees. This command will turn your robot for a desired rotation (in
@@ -20,9 +23,8 @@ public class TurnDegrees extends CommandBase {
    * @param degrees Degrees to turn. Leverages encoders to compare distance.
    * @param drive The drive subsystem on which this command will run
    */
-  public TurnDegrees(double speed, double degrees, Drivetrain drive) {
+  public TurnDegreesTheSecond(double degrees, Drivetrain drive) {
     m_degrees = degrees;
-    m_speed = speed;
     m_drive = drive;
     addRequirements(drive);
   }
@@ -33,21 +35,18 @@ public class TurnDegrees extends CommandBase {
     // Set motors to stop, read encoder values for starting point
     m_drive.arcadeDrive(0, 0);
     m_drive.resetEncoders();
-    //System.out.println("Inside TurnDegrees");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drive.arcadeDrive(0, m_speed);
-    //System.out.println("Execute");
+    m_drive.arcadeDrive(0, pidcontrol.calculate(m_gyro.getAngleZ(), m_degrees));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_drive.arcadeDrive(0, 0);
-    System.out.println("Turn End");
   }
 
   // Returns true when the command should end.
