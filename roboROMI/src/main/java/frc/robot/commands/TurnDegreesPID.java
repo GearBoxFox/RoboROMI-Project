@@ -4,21 +4,19 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.sensors.RomiGyro;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.commands.TurnDegrees;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class TurnDegreesPID extends CommandBase {
   private final Drivetrain m_drive;
   private final double m_degrees;
   private final double m_speed;
-  PIDController pidcontrol = new PIDController(0.2, 0, 0);
-  RomiGyro m_gyro = new RomiGyro();
+  private final PIDController pidTurn = new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0);
+  
 
   /**
    * Creates a new TurnDegrees. This command will turn your robot for a desired rotation (in
@@ -40,14 +38,14 @@ public class TurnDegreesPID extends CommandBase {
     // Set motors to stop, read encoder values for starting point
     m_drive.arcadeDrive(0, 0);
     m_drive.resetEncoders();
-    m_gyro.reset();
+    m_drive.resetGyro();
     System.out.println("Init");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-   SmartDashboard.putNumber("Controller Output", pidcontrol.calculate(m_gyro.getAngleZ(), m_degrees));
+   SmartDashboard.putNumber("Controller Output", pidTurn.calculate(m_drive.getGyroAngleZ(), m_degrees));
    /*
     if(pidcontrol.calculate(m_gyro.getAngleZ(), m_degrees) > m_degrees){
       m_drive.arcadeDrive(0, -m_speed);
@@ -56,11 +54,11 @@ public class TurnDegreesPID extends CommandBase {
       m_drive.arcadeDrive(0, m_speed);
     }
   */
-    //double outputAngle = pidcontrol.calculate(m_gyro.getAngleZ(), m_degrees);
-    double outputAngle = getCalcAngle(m_gyro.getAngleZ(), m_degrees);
+    double outputAngle = pidTurn.calculate(m_drive.getGyroAngleZ(), m_degrees);
+    //double outputAngle = getCalcAngle(m_drive.getGyroAngleZ(), m_degrees);
     SmartDashboard.putNumber("Setpoint", outputAngle);
-    System.out.println(outputAngle);
-    System.out.println(m_gyro.getAngleX());
+    //System.out.println(outputAngle);
+    //System.out.println(m_drive.getGyroAngleX());
     //System.out.println("Before IF statement");
     if(outputAngle < 0){
       //System.out.println("Setpoint is less than zero");
@@ -88,9 +86,10 @@ public class TurnDegreesPID extends CommandBase {
     */
     // Compare distance travelled from start to distance based on degree turn
     //return getAverageTurningDistance() >= (inchPerDegree * m_degrees);
-    return Math.abs(m_gyro.getAngleZ()) >= Math.abs(m_degrees);
+    return Math.abs(m_drive.getGyroAngleZ()) >= Math.abs(m_degrees);
   }
 
+  /*
   private double getAverageTurningDistance() {
     double leftDistance = Math.abs(m_drive.getLeftDistanceInch());
     double rightDistance = Math.abs(m_drive.getRightDistanceInch());
@@ -106,4 +105,5 @@ public class TurnDegreesPID extends CommandBase {
 
     return error * kp;
   }
+  */
 }

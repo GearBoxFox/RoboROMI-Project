@@ -4,10 +4,16 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
+  //static Trajectory path = new Trajectory();
+  //String trajJSON = "output/Unnamed.wpilib.json";
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,6 +37,17 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     System.out.print("Robot init");
+
+    /*
+    try{
+     // Gets the path to the JSON file
+      Path trajPath = Filesystem.getDeployDirectory().toPath().resolve(trajJSON);
+      // Converts JSON to trajectory
+      path = TrajectoryUtil.fromPathweaverJson(trajPath);
+    } catch(IOException ex){
+      DriverStation.reportError("Unable to open trajectory: " + trajJSON, ex.getStackTrace());
+    }
+    */
   }
 
   /**

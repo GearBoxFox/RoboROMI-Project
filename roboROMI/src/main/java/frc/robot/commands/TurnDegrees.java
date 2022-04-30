@@ -47,7 +47,6 @@ public class TurnDegrees extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_drive.arcadeDrive(0, 0);
-    System.out.println("Turn End");
   }
 
   // Returns true when the command should end.
