@@ -34,6 +34,7 @@ import frc.robot.commands.TurnOnYellow;
 import frc.robot.commands.Auto.AutonomousDance;
 import frc.robot.commands.Auto.AutonomousDistance;
 import frc.robot.commands.Auto.AutonomousTime;
+import frc.robot.commands.Auto.PathweaverAuto;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OnBoardIO;
 import frc.robot.subsystems.OnBoardIO.ChannelMode;
@@ -114,7 +115,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_trajChooser);
 
     // Setup SmartDashboard options
-    //m_chooser.setDefaultOption("Trajectory Control", getTraj());
+    m_chooser.setDefaultOption("Trajectory Control", new PathweaverAuto(m_drivetrain));
     m_chooser.addOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
     m_chooser.addOption("Auto Dance", new AutonomousDance(m_drivetrain));
     m_chooser.addOption("PID Turn", new TurnDegreesPID(1, 90, m_drivetrain));
@@ -215,32 +216,6 @@ public class RobotContainer {
   }
   */
 
-  /*
-  public final Command getTraj(){
-  Trajectory robotPath = Robot.path;
-  // Creates the Ramsete controller
-  RamseteCommand ramseteCommand = new RamseteCommand(
-    robotPath,
-    m_drivetrain::getPose,
-    new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-    new SimpleMotorFeedforward(DriveConstants.ksVolts,
-                               DriveConstants.kvVoltSecondsPerMeter,
-                               DriveConstants.kaVoltSecondsSquaredPerMeter),
-    DriveConstants.kDriveKinematics,
-    m_drivetrain::getWheelSpeeds,
-    new PIDController(DriveConstants.kPDriveVel, 0, 0),
-    new PIDController(DriveConstants.kPDriveVel, 0, 0),
-    // RamseteCommand passes volts to the callback
-    m_drivetrain::tankDriveVolts,
-    m_drivetrain
-  );
-  // Resets odometry in a crappy way
-  m_drivetrain.resetOdometry(robotPath.getInitialPose());
-
-  // Returns the Ramsete controller command group, and then stops the drivetrain
-  return ramseteCommand.andThen(() -> m_drivetrain.tankDriveVolts(0, 0));
-  }
-  */
 /*
   public Command printGyroAngle(){
     double angle = m_gryo.printRawAngle();
