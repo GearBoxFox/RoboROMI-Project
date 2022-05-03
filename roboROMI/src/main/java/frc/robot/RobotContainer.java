@@ -15,6 +15,7 @@ import frc.robot.commands.Auto.AutonomousDance;
 import frc.robot.commands.Auto.AutonomousDistance;
 import frc.robot.commands.Auto.AutonomousTime;
 import frc.robot.commands.Auto.Drive1M;
+import frc.robot.commands.Auto.Drive1MTurn;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OnBoardIO;
 import frc.robot.subsystems.OnBoardIO.ChannelMode;
@@ -94,7 +95,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_trajChooser);
 
     // Setup SmartDashboard options
-    m_chooser.setDefaultOption("Trajectory Control", Drive1M.drive(m_drivetrain));
+    m_chooser.setDefaultOption("Trajectory Control", new Drive1MTurn(m_drivetrain));
     m_chooser.addOption("Auto Routine Time", new AutonomousTime(m_drivetrain));
     m_chooser.addOption("Auto Dance", new AutonomousDance(m_drivetrain));
     m_chooser.addOption("PID Turn", new TurnDegreesPID(1, 90, m_drivetrain));

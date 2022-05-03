@@ -10,4 +10,9 @@ public class Drive1M {
         TrajectoryConfig config = TrajUtils.getDefaultTrajectoryConfig();
         return TrajUtils.startTrajectory("Paths\\forward", config, drive);
     }
+
+    public static Command turn(Drivetrain drive){
+        TrajectoryConfig config = TrajUtils.getDefaultTrajectoryConfig();
+        return TrajUtils.createTrajectory("Paths\\turn", config, drive);
+    }
 }

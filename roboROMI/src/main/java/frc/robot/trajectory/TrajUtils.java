@@ -69,9 +69,7 @@ public class TrajUtils {
         return new TrajectoryConfig(maxSpeedMetersPerSecond,
             maxAccelerationMetersPerSecondSquared)
             // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(Constants.DriveConstants.kDriveKinematics)
-            // Apply the voltage constraint
-            .addConstraint(autoVoltageConstraint);
+            .setKinematics(Constants.DriveConstants.kDriveKinematics);
     }
 
     public static TrajectoryConfig getDefaultTrajectoryConfig(){
@@ -88,6 +86,11 @@ public class TrajUtils {
         SetInitialOdometryCommand setOdom = new SetInitialOdometryCommand(drive, traj.getInitialPose());
 
         return setOdom.andThen(followTrajectory);
+    }
+
+    public static CommandBase createTrajectory(String filename, TrajectoryConfig config, Drivetrain drive){
+        Trajectory traj = loadTrajectory(filename, config);
+        return new FollowTraj(traj, drive);
     }
     
 }
