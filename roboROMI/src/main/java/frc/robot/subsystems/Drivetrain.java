@@ -9,9 +9,11 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.Constants;
 import frc.robot.sensors.RomiGyro;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class Drivetrain extends SubsystemBase {
@@ -40,6 +42,9 @@ public class Drivetrain extends SubsystemBase {
   // Set up odometry
   private final DifferentialDriveOdometry m_odometry;
 
+  //Set up controllers for velocity control
+  private final SimpleMotorFeedforward lController = new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts, Constants.DriveConstants.kvVoltSecondsPerMeter, Constants.DriveConstants.kaVoltSecondsSquaredPerMeter);
+  private final SimpleMotorFeedforward rController = new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts, Constants.DriveConstants.kvVoltSecondsPerMeter, Constants.DriveConstants.kaVoltSecondsSquaredPerMeter);
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     // We need to invert one side of the drivetrain so that positive voltages
@@ -162,6 +167,11 @@ public class Drivetrain extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     resetEncoders();
     m_odometry.resetPosition(pose, m_gyro.getRotation2d());
+  }
+
+  public void smartVelocityControl(double leftVelocity, double rightVelocity, double leftAcceleration, double rightAcceleration){
+    m_leftMotor.setVoltage(lController.calculate(leftVelocity, leftAcceleration));
+    m_rightMotor.setVoltage(rController.calculate(rightVelocity, rightAcceleration));
   }
 
   @Override
