@@ -121,7 +121,7 @@ public class RobotContainer {
    */
   public Command getArcadeDriveCommand() {
       return new DoubleDriveStyle(
-        m_drivetrain, () -> -m_controller.getLeftY(), () -> m_controller.getRightX(), () -> m_controller.getRightY());
+        m_drivetrain, () -> -m_controller.getLeftY(), () -> m_controller.getRightX(), () -> -m_controller.getRightY());
         
   }
 
