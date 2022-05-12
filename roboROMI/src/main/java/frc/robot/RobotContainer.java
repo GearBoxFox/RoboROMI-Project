@@ -7,7 +7,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.DoubleDriveStyle;
 import frc.robot.commands.ResetGyro;
+import frc.robot.commands.SwitchDriveStyle;
 import frc.robot.commands.TurnDegreesPID;
 import frc.robot.commands.TurnOffYellow;
 import frc.robot.commands.TurnOnYellow;
@@ -87,7 +89,7 @@ public class RobotContainer {
     XboxBumperLeft.or(XboxBumperRight).whenInactive(new TurnOffYellow(m_onboardIO));
 
     JoystickButton XboxButtonA = new JoystickButton(m_controller, XboxController.Button.kA.value);
-    XboxButtonA.whenActive(new ResetGyro(m_drivetrain));
+    XboxButtonA.whenActive(new SwitchDriveStyle(m_drivetrain));
 
     // Setup trajectory chooser
     m_trajChooser.setDefaultOption("No Pathweaver", "Example");
@@ -118,8 +120,8 @@ public class RobotContainer {
    * @return the command to run in teleop
    */
   public Command getArcadeDriveCommand() {
-      return new ArcadeDrive(
-        m_drivetrain, () -> -m_controller.getLeftY(), () -> m_controller.getRightX());
+      return new DoubleDriveStyle(
+        m_drivetrain, () -> -m_controller.getLeftY(), () -> m_controller.getRightX(), () -> m_controller.getRightY());
         
   }
 
