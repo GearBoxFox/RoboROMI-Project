@@ -42,6 +42,9 @@ public class Drivetrain extends SubsystemBase {
   // Set up odometry
   private final DifferentialDriveOdometry m_odometry;
 
+  // Set up boolean values for drive switching
+  public boolean arcadeStyle;
+
   //Set up controllers for velocity control
   private final SimpleMotorFeedforward lController = new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts, Constants.DriveConstants.kvVoltSecondsPerMeter, Constants.DriveConstants.kaVoltSecondsSquaredPerMeter);
   private final SimpleMotorFeedforward rController = new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts, Constants.DriveConstants.kvVoltSecondsPerMeter, Constants.DriveConstants.kaVoltSecondsSquaredPerMeter);
@@ -58,10 +61,19 @@ public class Drivetrain extends SubsystemBase {
     resetEncoders();
 
     m_odometry = new DifferentialDriveOdometry(m_gyro.getRotation2d());
+
+    //Set up variables for drive type switch
+    arcadeStyle = true;
+
   }
 
   public void arcadeDrive(double xaxisSpeed, double zaxisRotate) {
     m_diffDrive.arcadeDrive(xaxisSpeed, zaxisRotate);
+  }
+
+  public void mowerDrive(double leftSpeed, double rightSpeed){
+    m_leftMotor.set(leftSpeed);
+    m_rightMotor.set(rightSpeed);
   }
 
   public void resetEncoders() {
